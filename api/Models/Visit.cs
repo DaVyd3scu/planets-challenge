@@ -6,7 +6,7 @@
         public int PlanetId { get; set; }
         public int RobotId { get; set; }
 
-        public Robot Robot { get; set; }
-        public Planet Planet { get; set; }
+        public virtual Robot Robot { get; set; }
+        public virtual Planet Planet { get; set; }
     }
 }

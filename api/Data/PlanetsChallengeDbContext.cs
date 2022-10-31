@@ -13,5 +13,7 @@ namespace api.Data
         public DbSet<Captain> Captains { get; set; }
         public DbSet<Planet> Planets { get; set; }
         public DbSet<Robot> Robots { get; set; }
+        public DbSet<Visit> Visits { get; set; }
+        public DbSet<SolarSystem> SolarSystems { get; set; }
     }
 }

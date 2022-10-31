@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using api.Data;
 
@@ -11,9 +12,10 @@ using api.Data;
 namespace api.Migrations
 {
     [DbContext(typeof(PlanetsChallengeDbContext))]
-    partial class PlanetsChallengeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221030221227_solar_system")]
+    partial class solar_system
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -121,8 +123,7 @@ namespace api.Migrations
                 {
                     b.Property<int>("SolarSystemId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
+                        .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SolarSystemId"), 1L, 1);
 
@@ -132,7 +133,7 @@ namespace api.Migrations
 
                     b.HasKey("SolarSystemId");
 
-                    b.ToTable("SolarSystems");
+                    b.ToTable("SolarSystem");
                 });
 
             modelBuilder.Entity("api.Models.Visit", b =>
@@ -155,7 +156,7 @@ namespace api.Migrations
 
                     b.HasIndex("RobotId");
 
-                    b.ToTable("Visits");
+                    b.ToTable("Visit");
                 });
 
             modelBuilder.Entity("api.Models.Planet", b =>
