@@ -10,19 +10,15 @@ namespace api.Models
         [Column("id")]
         public int CaptainId { get; set; }
 
-        [Required]
-        public string FirstName { get; set; }
+        public virtual string? FirstName { get; set; }
 
-        [Required]
-        public string LastName { get; set; }
+        public virtual string? LastName { get; set; }
 
-        [Required]
         [JsonIgnore]
-        public string Username { get; set; }
+        public virtual string? Username { get; set; }
 
-        [Required]
         [JsonIgnore]
-        public string Password { get; set; }
+        public virtual string? Password { get; set; }
 
         // Navigation properties
         [JsonIgnore]

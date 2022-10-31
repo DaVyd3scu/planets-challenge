@@ -59,17 +59,17 @@ namespace api.Controllers
         }
 
         // Gets a planet from a solar system
-        [HttpGet("Planet/{solarSystemId:int}/{planetId:int}")]
-        public async Task<IActionResult> GetPlanet([FromRoute] int solarSystemId, [FromRoute] int planetId)
+        [HttpGet("[controller]/{planetId:int}")]
+        public async Task<IActionResult> GetPlanet([FromRoute] int planetId)
         {
             var planet = await dbContext.Planets
-                .Where(p => p.SolarSystemId == solarSystemId && p.PlanetId == planetId)
+                .Where(p => p.PlanetId == planetId)
                 .Include(p => p.SolarSystem)
-                .ToListAsync();
+                .FirstOrDefaultAsync();
 
             if (planet == null)
             {
-                return NoContent();
+                return NotFound();
             }
 
             return Ok(planet);
@@ -86,7 +86,7 @@ namespace api.Controllers
         }
 
         // Adds a planet in the specified solar system
-        [HttpPost("Planet/{solarSystemId:int}")]
+        [HttpPost("[controller]/{solarSystemId:int}")]
         public async Task<IActionResult> AddPlanet([FromBody] Planet planet, [FromRoute] int solarSystemId)
         {
             if (planet.Status == "") // If the user doesn't specify a status for the planet
@@ -97,6 +97,30 @@ namespace api.Controllers
             planet.SolarSystem = await dbContext.SolarSystems.FirstOrDefaultAsync(s => s.SolarSystemId == solarSystemId);
 
             await dbContext.Planets.AddAsync(planet);
+            await dbContext.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpPut("[controller]/{planetId:int}")]
+        public async Task<IActionResult> UpdatePlanetStatus([FromRoute] int planetId, [FromBody] Planet planet)
+        {
+            var findPlanet = await dbContext.Planets.Where(p => p.PlanetId == planetId).FirstOrDefaultAsync();
+            if (findPlanet == null)
+            {
+                return NotFound("Planet was not found");
+            }
+
+            var user = await dbContext.Captains.Where(c => c.CaptainId == planet.CaptainId).FirstOrDefaultAsync();
+            if (user == null)
+            {
+                return NotFound("User was not found.");
+            }
+
+            findPlanet.Description = planet.Description;
+            findPlanet.Status = planet.Status;
+            findPlanet.Captain = user;
+
             await dbContext.SaveChangesAsync();
 
             return NoContent();

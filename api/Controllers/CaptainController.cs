@@ -1,7 +1,10 @@
 ﻿using api.Data;
 using api.Models;
+using api.Models.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace api.Controllers
 {
@@ -13,6 +16,30 @@ namespace api.Controllers
         public CaptainController(PlanetsChallengeDbContext dbContext)
         {
             this.dbContext = dbContext;
+        }
+
+        // Encrypts the password
+        private static string HashPassword(string? password)
+        {
+            var asByteArray = Encoding.Default.GetBytes(password);
+
+            return Convert.ToBase64String(SHA256.Create().ComputeHash(asByteArray));
+        }
+
+        [HttpPost("~/api/Login")]
+        public async Task<IActionResult> Login([FromBody] UserLogin user)
+        {
+            var hashedPassword = HashPassword(user.Password);
+            var findUser = await dbContext.Captains
+                .Where(u => u.Username == user.Username && u.Password == hashedPassword)
+                .FirstOrDefaultAsync();
+
+            if (findUser == null)
+            {
+                return BadRequest("Username or password is incorrect.");
+            }
+
+            return NoContent();
         }
 
         [HttpGet("~/api/Captains")]
@@ -59,9 +86,18 @@ namespace api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddCaptain([FromBody] Captain captain)
+        public async Task<IActionResult> AddCaptain([FromBody] UserRegister user)
         {
-            await dbContext.AddAsync(captain);
+            var checkUserExists = await dbContext.Captains.Where(u => u.Username == user.Username).FirstOrDefaultAsync();
+
+            if (checkUserExists != null)
+            {
+                return BadRequest("User already exists!");
+            }
+
+            user.Password = HashPassword(user.Password);
+
+            await dbContext.AddAsync(user);
             await dbContext.SaveChangesAsync();
 
             return NoContent();
