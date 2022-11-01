@@ -1,5 +1,6 @@
 ﻿using api.Data;
 using api.Models;
+using api.Models.ActionModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -86,15 +87,15 @@ namespace api.Controllers
         }
 
         // Adds a planet in the specified solar system
-        [HttpPost("[controller]/{solarSystemId:int}")]
-        public async Task<IActionResult> AddPlanet([FromBody] Planet planet, [FromRoute] int solarSystemId)
+        [HttpPost("[controller]")]
+        public async Task<IActionResult> AddPlanet([FromBody] InsertPlanet planet)
         {
             if (planet.Status == "") // If the user doesn't specify a status for the planet
             {
                 planet.Status = "TODO"; // TODO is default
             }
             // Adding the solar system data
-            planet.SolarSystem = await dbContext.SolarSystems.FirstOrDefaultAsync(s => s.SolarSystemId == solarSystemId);
+            planet.SolarSystem = await dbContext.SolarSystems.FirstOrDefaultAsync(s => s.SolarSystemId == planet.SolarSystemId);
 
             await dbContext.Planets.AddAsync(planet);
             await dbContext.SaveChangesAsync();
@@ -103,7 +104,7 @@ namespace api.Controllers
         }
 
         [HttpPut("[controller]/{planetId:int}")]
-        public async Task<IActionResult> UpdatePlanetStatus([FromRoute] int planetId, [FromBody] Planet planet)
+        public async Task<IActionResult> UpdatePlanetStatus([FromRoute] int planetId, [FromBody] UpdatePlanet planet)
         {
             var findPlanet = await dbContext.Planets.Where(p => p.PlanetId == planetId).FirstOrDefaultAsync();
             if (findPlanet == null)

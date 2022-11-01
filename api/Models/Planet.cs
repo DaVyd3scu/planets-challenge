@@ -11,16 +11,14 @@ namespace api.Models
         [Column("id")]
         public int PlanetId { get; set; }
 
-        [Required]
-        public string Name { get; set; }
+        public virtual string? Name { get; set; }
 
         public string? ImageUrl { get; set; }
 
         public string? Description { get; set; }
 
-        [Required]
         [Comment("Can only have the following values: OK, !OK, TODO, En Route")]
-        public string Status { get; set; }
+        public virtual string? Status { get; set; }
 
         // Foreign keys
         [JsonIgnore]
